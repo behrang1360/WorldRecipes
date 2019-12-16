@@ -15,5 +15,9 @@ namespace WorldRecipes.Data
         public DbSet<User> Users { get; set; }
 
         public DbSet<Ingredient> Ingredients { get; set; }
+
+        public DbSet<FoodLog> FoodLogs { get; set; }
+
+        public DbSet<RecipeLog> recipeLogs { get; set; }
     }
 }
