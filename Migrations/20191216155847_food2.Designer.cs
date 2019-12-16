@@ -10,8 +10,8 @@ using WorldRecipes.Data;
 namespace WorldRecipes.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20191216142734_init")]
-    partial class init
+    [Migration("20191216155847_food2")]
+    partial class food2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,17 +46,45 @@ namespace WorldRecipes.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("InsertDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("InsertUserUserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RecipeId")
-                        .HasColumnType("int");
-
                     b.HasKey("FoodId");
 
-                    b.HasIndex("RecipeId");
+                    b.HasIndex("InsertUserUserId");
 
                     b.ToTable("Foods");
+                });
+
+            modelBuilder.Entity("WorldRecipes.Models.FoodLog", b =>
+                {
+                    b.Property<int>("FoodLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("FoodId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UdpateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdateByUserUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FoodLogId");
+
+                    b.HasIndex("FoodId");
+
+                    b.HasIndex("UpdateByUserUserId");
+
+                    b.ToTable("FoodLogs");
                 });
 
             modelBuilder.Entity("WorldRecipes.Models.Ingredient", b =>
@@ -84,6 +112,9 @@ namespace WorldRecipes.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("FoodId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("IngredientId")
                         .HasColumnType("int");
 
@@ -95,11 +126,49 @@ namespace WorldRecipes.Migrations
 
                     b.HasKey("RecipeId");
 
+                    b.HasIndex("FoodId");
+
                     b.HasIndex("IngredientId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("WorldRecipes.Models.RecipeLog", b =>
+                {
+                    b.Property<int>("RecipeLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("IngredientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RecipeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UdpateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdateByUserUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RecipeLogId");
+
+                    b.HasIndex("IngredientId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.HasIndex("UpdateByUserUserId");
+
+                    b.ToTable("recipeLogs");
                 });
 
             modelBuilder.Entity("WorldRecipes.Models.User", b =>
@@ -109,34 +178,13 @@ namespace WorldRecipes.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Gender")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Interests")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Introduction")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("KnownAs")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("LastActive")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LookingFor")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("PasswordHash")
@@ -145,6 +193,9 @@ namespace WorldRecipes.Migrations
                     b.Property<byte[]>("PasswordSalt")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<int?>("UserAccessId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
@@ -152,18 +203,59 @@ namespace WorldRecipes.Migrations
 
                     b.HasIndex("CountryId");
 
+                    b.HasIndex("UserAccessId");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("WorldRecipes.Models.UserAccess", b =>
+                {
+                    b.Property<int>("UserAccessId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("CanAdd")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanEdit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanView")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("UasrAccessId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserAccessId");
+
+                    b.ToTable("userAccesses");
                 });
 
             modelBuilder.Entity("WorldRecipes.Models.Food", b =>
                 {
-                    b.HasOne("WorldRecipes.Models.Recipe", "Recipe")
+                    b.HasOne("WorldRecipes.Models.User", "InsertUser")
                         .WithMany()
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("InsertUserUserId");
+                });
+
+            modelBuilder.Entity("WorldRecipes.Models.FoodLog", b =>
+                {
+                    b.HasOne("WorldRecipes.Models.Food", "Food")
+                        .WithMany()
+                        .HasForeignKey("FoodId");
+
+                    b.HasOne("WorldRecipes.Models.User", "UpdateByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdateByUserUserId");
                 });
 
             modelBuilder.Entity("WorldRecipes.Models.Recipe", b =>
                 {
+                    b.HasOne("WorldRecipes.Models.Food", "Food")
+                        .WithMany()
+                        .HasForeignKey("FoodId");
+
                     b.HasOne("WorldRecipes.Models.Ingredient", "Ingredient")
                         .WithMany()
                         .HasForeignKey("IngredientId");
@@ -173,11 +265,30 @@ namespace WorldRecipes.Migrations
                         .HasForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("WorldRecipes.Models.RecipeLog", b =>
+                {
+                    b.HasOne("WorldRecipes.Models.Ingredient", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IngredientId");
+
+                    b.HasOne("WorldRecipes.Models.Recipe", null)
+                        .WithMany("RecipeLog")
+                        .HasForeignKey("RecipeId");
+
+                    b.HasOne("WorldRecipes.Models.User", "UpdateByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdateByUserUserId");
+                });
+
             modelBuilder.Entity("WorldRecipes.Models.User", b =>
                 {
                     b.HasOne("WorldRecipes.Models.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId");
+
+                    b.HasOne("WorldRecipes.Models.UserAccess", "UserAccess")
+                        .WithMany()
+                        .HasForeignKey("UserAccessId");
                 });
 #pragma warning restore 612, 618
         }

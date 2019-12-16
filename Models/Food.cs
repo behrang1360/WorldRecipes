@@ -11,8 +11,6 @@ namespace WorldRecipes.Models
 
         public DateTime InsertDate{ get; set; }
         
-        public User InsertUser { get; set; }
-                      
-        public Recipe Recipe { get; set; }
+        public User InsertUser { get; set; }                      
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WorldRecipes.Data;
 
 namespace WorldRecipes.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20191216155731_food")]
+    partial class food
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,9 +112,6 @@ namespace WorldRecipes.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FoodId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("IngredientId")
                         .HasColumnType("int");
 
@@ -123,8 +122,6 @@ namespace WorldRecipes.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("RecipeId");
-
-                    b.HasIndex("FoodId");
 
                     b.HasIndex("IngredientId");
 
@@ -250,10 +247,6 @@ namespace WorldRecipes.Migrations
 
             modelBuilder.Entity("WorldRecipes.Models.Recipe", b =>
                 {
-                    b.HasOne("WorldRecipes.Models.Food", "Food")
-                        .WithMany()
-                        .HasForeignKey("FoodId");
-
                     b.HasOne("WorldRecipes.Models.Ingredient", "Ingredient")
                         .WithMany()
                         .HasForeignKey("IngredientId");
